@@ -7,7 +7,7 @@ import java.util.List;
 public class MultipartExampleClient {
     private static final String USAGE = "usage:\n\tjava "
             + MultipartExampleClient.class.getSimpleName()
-            + " <address> [<field name>:<field text> OR <field name>=<file name>]...\n"
+            + " <address> [<field name>:<field text> OR <field name>=<file name> OR <field name>%<json>]...\n"
             + "example:\n\tjava "
             + MultipartExampleClient.class.getSimpleName()
             + " http://example.com/ name=Me avatar:selfie.jpg\n";
@@ -23,9 +23,12 @@ public class MultipartExampleClient {
                 for (int i = 1; i < args.length; ++i) {
                     final String arg = args[i];
                     final int ei = arg.indexOf('=');
+                    final int pi = arg.indexOf('%');
                     final int si = arg.indexOf(':');
-                    if (ei != -1) {
+                    if (ei != -1 && (ei < pi || pi == -1) && (ei < si || si == -1)) {
                         fields.add(new Field(arg.substring(0, ei), arg.substring(ei + 1), Field.Type.FILE));
+                    } else if (pi != -1 && (pi < si || si == -1)) {
+                        fields.add(new Field(arg.substring(0, pi), arg.substring(pi + 1), Field.Type.JSON));
                     } else if (si != -1) {
                         fields.add(new Field(arg.substring(0, si), arg.substring(si + 1), Field.Type.TEXT));
                     } else {
@@ -56,6 +59,9 @@ public class MultipartExampleClient {
                         break;
                     case FILE:
                         tool.appendFile(f.name, new File(f.data));
+                        break;
+                    case JSON:
+                        tool.appendJsonField(f.name, f.data);
                         break;
                     default:
                         throw new IllegalStateException(f.type.name() + " is unknown");
@@ -90,7 +96,7 @@ public class MultipartExampleClient {
         }
 
         enum Type {
-            TEXT, FILE
+            TEXT, FILE, JSON
         }
     }
 }

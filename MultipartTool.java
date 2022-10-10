@@ -75,7 +75,7 @@ public class MultipartTool implements Closeable {
                            final int len,
                            final String contentType,
                            final String fileName) throws IOException {
-        appendFilePreamble(fieldName, contentType, fileName);
+        appendFilePreamble(fieldName, contentType, len - offset, fileName);
         connectionOS.write(data, offset, len);
         appendFilePS();
     }
@@ -90,7 +90,7 @@ public class MultipartTool implements Closeable {
                            final String contentType) throws IOException {
         final FileInputStream fis = new FileInputStream(file);
         try {
-            appendFile(fieldName, fis, contentType, file.getAbsolutePath());
+            appendFile(fieldName, fis, contentType, file.length(), file.getAbsolutePath());
         } finally {
             fis.close();
         }
@@ -103,8 +103,9 @@ public class MultipartTool implements Closeable {
     public void appendFile(final String fieldName,
                            final InputStream data,
                            final String contentType,
+                           final long contentLength,
                            final String fileName) throws IOException {
-        appendFilePreamble(fieldName, contentType, fileName);
+        appendFilePreamble(fieldName, contentType, contentLength, fileName);
         final byte[] buffer = new byte[4096];
         //noinspection StatementWithEmptyBody
         for (int n; (n = data.read(buffer)) != -1; connectionOS.write(buffer, 0, n));
@@ -119,11 +120,12 @@ public class MultipartTool implements Closeable {
                 .close();
     }
 
-    private void appendFilePreamble(String fieldName, String contentType, String fileName) throws IOException {
+    private void appendFilePreamble(String fieldName, String contentType, long contentLength, String fileName) throws IOException {
         connectionW.append("--").append(boundary).append(CRLF)
                 .append("Content-Disposition: form-data; name=\"").append(fieldName)
                 .append("\"; filename=\"").append(fileName).append('"').append(CRLF)
                 .append("Content-Type: ").append(contentType).append(CRLF)
+                .append("Content-Length: ").append(Long.toString(contentLength)).append(CRLF)
                 .append("Content-Transfer-Encoding: binary").append(CRLF)
                 .append(CRLF)
                 .flush();
