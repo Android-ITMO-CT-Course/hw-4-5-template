@@ -84,7 +84,7 @@
 - POST `/1ch` с сообщением в body и `Content-Type=multipart/form-data`
     - `200 OK` и `id` поста
     - Ошибку, смотри коды состояния HTTP
-    - Пример смотри в `MultipartTool` и `MultipartToolExample`
+    - Пример смотри в `MultipartTool` и `MultipartExampleClient`
       - Да, их можно скопипастить в проект и использовать
 
 Сообщение:
