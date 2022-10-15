@@ -33,6 +33,7 @@
 - Утечка ресурсов
   - Внимательно следите за лямбдами
 - `package com.example`
+- Работа с сетью / диском на main потоке
 
 ### Что предполагается использовать
 
@@ -63,6 +64,11 @@
 [RxJava](https://github.com/ReactiveX/RxJava),
 [kotlinx.coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
 и [Room](https://developer.android.com/jetpack/androidx/releases/room).
+
+## ДЗ 5
+
+- При запуске показывать уже имеющиеся сообщения
+- При отправке без интернета сохранять отложенное сообщение и при появлении сети — отправлять
 
 ## API
 
